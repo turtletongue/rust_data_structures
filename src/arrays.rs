@@ -50,7 +50,6 @@ impl DynamicArray {
 
       self.insert_unsafe(initial_length, item);
     }
-
   }
 
   pub fn index_of(&self, item: ArrayItem) -> isize {

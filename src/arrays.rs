@@ -75,7 +75,6 @@ impl DynamicArray {
     self.length -= 1;
 
     for i in index..self.length {
-      println!("{} become {i}", i + 1);
       unsafe {
         self.insert_unsafe(i, *self.items.add(i + 1));
       }

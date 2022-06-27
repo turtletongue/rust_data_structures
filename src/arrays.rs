@@ -79,13 +79,15 @@ impl DynamicArray {
       }
     }
 
-    let should_shrink = self.length != 0 && self.capacity / self.length >= ARRAY_QUARTER;
+    let should_shrink = self.length != 0 && self.capacity / self.length >= 2;
 
     if should_shrink {
       let initial_items = self.items;
 
+      self.capacity = self.capacity - (self.capacity / ARRAY_QUARTER);
+
       unsafe {
-        self.items = Self::allocate_unsafe(self.length);
+        self.items = Self::allocate_unsafe(self.capacity);
       }
 
       let mut allocated_index = 0;
@@ -97,8 +99,6 @@ impl DynamicArray {
   
         allocated_index += 1;
       }
-
-      self.capacity = self.length;
     }
   }
 

@@ -1,4 +1,4 @@
-use std::alloc::{Layout, alloc};
+use std::alloc::{Layout, alloc, dealloc};
 use std::fmt::Display;
 
 type ArrayItem = u8;
@@ -8,6 +8,7 @@ const ARRAY_QUARTER: usize = 4;
 
 pub struct DynamicArray {
   items: *mut ArrayItem,
+  layout: Layout,
   length: usize,
   capacity: usize
 }
@@ -15,8 +16,11 @@ pub struct DynamicArray {
 impl DynamicArray {
   pub fn new(size: usize) -> Self {
     unsafe {
+      let (items, layout) = Self::allocate_unsafe(size);
+
       Self {
-        items: Self::allocate_unsafe(size),
+        items,
+        layout,
         length: 0,
         capacity: size,
       }
@@ -36,11 +40,12 @@ impl DynamicArray {
     }
 
     let initial_items = self.items;
+    let initial_layout = self.layout;
 
     self.capacity = if initial_length == 0 { 1 } else { initial_length * 2 };
 
     unsafe {
-      self.items = Self::allocate_unsafe(self.capacity);
+      (self.items, self.layout) = Self::allocate_unsafe(self.capacity);
     }
 
     unsafe {
@@ -49,6 +54,8 @@ impl DynamicArray {
       }
 
       self.insert_unsafe(initial_length, item);
+
+      dealloc(initial_items, initial_layout);
     }
   }
 
@@ -83,11 +90,12 @@ impl DynamicArray {
 
     if should_shrink {
       let initial_items = self.items;
+      let initial_layout = self.layout;
 
       self.capacity = self.capacity - (self.capacity / ARRAY_QUARTER);
 
       unsafe {
-        self.items = Self::allocate_unsafe(self.capacity);
+        (self.items, self.layout) = Self::allocate_unsafe(self.capacity);
       }
 
       let mut allocated_index = 0;
@@ -98,6 +106,10 @@ impl DynamicArray {
         }
   
         allocated_index += 1;
+      }
+
+      unsafe {
+        dealloc(initial_items, initial_layout)
       }
     }
   }
@@ -110,10 +122,10 @@ impl DynamicArray {
     *self.items.add(index) = ArrayItem::default();
   }
 
-  unsafe fn allocate_unsafe(size: usize) -> *mut ArrayItem {
+  unsafe fn allocate_unsafe(size: usize) -> (*mut ArrayItem, Layout) {
     let layout = Layout::array::<ArrayItem>(size).unwrap();
 
-    alloc(layout) as *mut ArrayItem
+    (alloc(layout) as *mut ArrayItem, layout)
   }
 }
 

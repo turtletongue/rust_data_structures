@@ -1,15 +1,18 @@
-use rust_data_structures::arrays::DynamicArray;
+use std::error::Error;
 
-fn main() {
-  let mut array = DynamicArray::new(3);
+use rust_data_structures::lists::LinkedList;
 
-  array.insert(1);
-  array.insert(2);
-  array.insert(3);
+fn main() -> Result<(), Box<dyn Error>> {
+  let mut list = LinkedList::new();
 
-  array.remove_at(2);
-  
-  array.insert(7);
+  list.add_last(1);
+  list.add_last(2);
+  list.add_last(3);
 
-  println!("{array}");
+  list.remove_first()?;
+  list.remove_last()?;
+
+  println!("{list}");
+
+  Ok(())
 }

@@ -15,9 +15,43 @@ pub struct LinkedList<T: Clone> {
   size: usize
 }
 
-impl <T: Clone> Node<T> {
+impl<T: Clone> Node<T> {
   fn new(value: T, next: OptionalNode<T>) -> Self {
     Self { value, next }
+  }
+
+  fn get_next(&self) -> OptionalNode<T> {
+    if let Some(node) = &self.next {
+      Some(Rc::clone(node))
+    } else {
+      None
+    }
+  }
+
+  fn set_next(&mut self, next: OptionalNode<T>) {
+    self.next = if let Some(next) = &next {
+      Some(Rc::clone(next))
+    } else {
+      None
+    };
+  }
+}
+
+impl<T: Clone> Drop for Node<T> {
+  fn drop(&mut self) {
+    if let Some(mut child) = self.next.take() {
+      loop {
+        child = {
+          let mut child_borrowed = child.borrow_mut();
+
+          if let Some(next) = child_borrowed.next.take() {
+            next
+          } else {
+            break;
+          }
+        };
+      }
+    }
   }
 }
 
@@ -79,7 +113,7 @@ impl <T: PartialEq + Clone> LinkedList<T> {
       return Ok(())
     }
 
-    if let None = &self.head {
+    if self.is_empty() {
       return Err("List is empty");
     }
 
@@ -114,7 +148,7 @@ impl <T: PartialEq + Clone> LinkedList<T> {
       return Ok(())
     }
 
-    if let None = &self.head {
+    if self.is_empty() {
       return Err("List is empty");
     }
 
@@ -168,23 +202,58 @@ impl <T: PartialEq + Clone> LinkedList<T> {
     result
   }
 
+  pub fn reverse(&mut self) {
+    if self.is_empty() {
+      return;
+    }
+
+    let mut current = Rc::clone(self.head.as_ref().unwrap());
+    let mut previous = None;
+
+    loop {
+      current = {
+        let next = current.borrow().get_next();
+
+        current.borrow_mut().set_next(previous);
+
+        if next.is_none() {
+          break;
+        }
+
+        previous = Some(Rc::clone(&current));
+
+        Rc::clone(next.as_ref().unwrap())
+      };
+    }
+
+    let head = Rc::clone(self.head.as_ref().unwrap());
+    let tail = Rc::clone(self.tail.as_ref().unwrap());
+
+    self.tail = Some(head);
+    self.head = Some(tail);
+  }
+
   pub fn size(&self) -> usize {
     self.size
   }
 
+  fn is_empty(&self) -> bool {
+    self.head.is_none()
+  }
+
   fn loop_items<F>(&self, mut consumer: F) where F: FnMut(&Rc<RefCell<Node<T>>>) -> bool {
     if let Some(head) = &self.head {
-      let mut current_node = Rc::clone(head);
+      let mut current = Rc::clone(head);
 
       loop {
-        current_node = {
-          if !consumer(&current_node) {
+        current = {
+          if !consumer(&current) {
             break;
           }
 
-          let current_node_borrowed = current_node.borrow();
+          let current_borrowed = current.borrow();
 
-          if let Some(next) = &current_node_borrowed.next {
+          if let Some(next) = &current_borrowed.next {
             Rc::clone(&next)
           } else {
             break;

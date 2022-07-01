@@ -1,18 +1,22 @@
 use std::error::Error;
+use std::time::{Instant};
 
 use rust_data_structures::lists::LinkedList;
 
 fn main() -> Result<(), Box<dyn Error>> {
   let mut list = LinkedList::new();
 
-  list.add_last(1);
-  list.add_last(2);
-  list.add_last(3);
+  for i in 0..100_000_000 {
+    list.add_last(i);
+  }
 
-  list.remove_first()?;
-  list.remove_last()?;
+  println!("created");
 
-  println!("{list}");
+  let now = Instant::now();
+
+  list.reverse();
+
+  println!("reversed in {}s", now.elapsed().as_secs());
 
   Ok(())
 }

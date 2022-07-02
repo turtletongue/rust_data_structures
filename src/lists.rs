@@ -233,6 +233,49 @@ impl <T: PartialEq + Clone> LinkedList<T> {
     self.head = Some(tail);
   }
 
+  pub fn get_kth_from_end(&self, k: usize) -> Result<T, &'static str> {
+    if k <= 0 {
+      return Err("K must be greater than zero");
+    }
+
+    if k > self.size() {
+      return Err("K must be less than or equal to size of the list");
+    }
+
+    let mut result = Rc::clone(self.head.as_ref().unwrap());
+    let mut end = Rc::clone(&result);
+
+    let distance = k - 1;
+
+    for _ in 0..distance {
+      end = {
+        let end_borrowed = end.borrow();
+
+        end_borrowed.get_next().unwrap()
+      };
+    }
+
+    self.loop_items(&mut |item: &Rc<RefCell<Node<T>>>| {
+      end = {
+        let end_borrowed = end.borrow();
+
+        if end_borrowed.next.is_none() {
+          result = Rc::clone(item);
+
+          return false;
+        }
+
+        end_borrowed.get_next().unwrap()
+      };
+
+      true
+    });
+
+    let result_borrowed = result.borrow();
+
+    Ok(result_borrowed.value.clone())
+  }
+
   pub fn size(&self) -> usize {
     self.size
   }

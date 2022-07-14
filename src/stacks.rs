@@ -19,6 +19,7 @@ impl<T: Clone + PartialEq> Stack<T> {
     if self.is_empty() {
       return Err("Stack is empty");
     }
+    
     self.items.get_kth_from_end(self.items.size())
   }
 

@@ -1,15 +1,21 @@
 use std::error::Error;
 
-use rust_data_structures::lists::LinkedList;
+use rust_data_structures::stacks::Stack;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut list = LinkedList::new();
+  let mut stack = Stack::new();
 
-  list.add_last(1);
-  list.add_last(4);
-  list.add_last(5);
+  stack.push(1);
+  stack.push(2);
+  stack.push(3);
 
-  println!("{}", list.get_kth_from_end(1)?);
+  stack.pop()?;
+
+  println!("{}", stack.pop()?);
+  stack.push(5);
+  println!("{}", stack.peek()?);
+
+  println!("{}", stack.is_empty());
 
   Ok(())
 }

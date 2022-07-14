@@ -37,24 +37,6 @@ impl<T: Clone> Node<T> {
   }
 }
 
-impl<T: Clone> Drop for Node<T> {
-  fn drop(&mut self) {
-    if let Some(mut child) = self.next.take() {
-      loop {
-        child = {
-          let mut child_borrowed = child.borrow_mut();
-
-          if let Some(next) = child_borrowed.next.take() {
-            next
-          } else {
-            break;
-          }
-        };
-      }
-    }
-  }
-}
-
 impl <T: PartialEq + Clone> LinkedList<T> {
   pub fn new() -> Self {
     Self {
@@ -280,7 +262,7 @@ impl <T: PartialEq + Clone> LinkedList<T> {
     self.size
   }
 
-  fn is_empty(&self) -> bool {
+  pub fn is_empty(&self) -> bool {
     self.head.is_none()
   }
 
@@ -322,5 +304,23 @@ impl<T: Display + Clone + PartialEq> Display for LinkedList<T> {
     write!(f, "[{}]", formatted_items)?;
 
     Ok(())
+  }
+}
+
+impl<T: Clone> Drop for LinkedList<T> {
+  fn drop(&mut self) {
+    if let Some(mut child) = self.head.take() {
+      loop {
+        child = {
+          let mut child_borrowed = child.borrow_mut();
+
+          if let Some(next) = child_borrowed.next.take() {
+            next
+          } else {
+            break;
+          }
+        };
+      }
+    }
   }
 }

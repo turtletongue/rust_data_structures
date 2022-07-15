@@ -1,21 +1,25 @@
 use std::error::Error;
 
-use rust_data_structures::stacks::Stack;
+use rust_data_structures::queues::ArrayQueue;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut stack = Stack::new();
+  let mut queue = ArrayQueue::<i32, 5>::new();
 
-  stack.push(1);
-  stack.push(2);
-  stack.push(3);
+  queue.enqueue(1)?;
+  queue.enqueue(5)?;
 
-  stack.pop()?;
+  println!("{queue}");
 
-  println!("{}", stack.pop()?);
-  stack.push(5);
-  println!("{}", stack.peek()?);
+  queue.dequeue()?;
+  queue.dequeue()?;
 
-  println!("{}", stack.is_empty());
+  queue.enqueue(5)?;
+  queue.enqueue(6)?;
+  queue.enqueue(7)?;
+
+  println!("{queue}");
+
+  println!("{}", queue.peek()?);
 
   Ok(())
 }

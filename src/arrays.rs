@@ -38,10 +38,8 @@ impl DynamicArray {
       return;
     }
 
-    self.capacity = if self.length == 0 { 1 } else { self.length * 2 };
-
     unsafe {
-      self.copy_with_allocation_unsafe(self.capacity);
+      self.copy_with_allocation_unsafe(if self.length == 0 { 1 } else { self.length * 2 });
 
       self.insert_unsafe(self.length, item);
     }
@@ -77,10 +75,8 @@ impl DynamicArray {
     let should_shrink = self.length != 1 && self.capacity / (self.length - 1) >= ARRAY_QUARTER;
 
     if should_shrink {
-      self.capacity = self.capacity - (self.capacity / 2);
-
       unsafe {
-        self.copy_with_allocation_unsafe(self.capacity);
+        self.copy_with_allocation_unsafe(self.capacity - (self.capacity / 2));
       }
     }
 
@@ -100,6 +96,8 @@ impl DynamicArray {
     let initial_layout = self.layout;
 
     (self.items, self.layout) = Self::allocate_unsafe(size);
+
+    self.capacity = size;
 
     for index in 0..self.length {
       self.insert_unsafe(index, *initial_items.add(index));

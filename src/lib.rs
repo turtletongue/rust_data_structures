@@ -5,3 +5,5 @@ pub mod lists;
 pub mod stacks;
 
 pub mod queues;
+
+pub mod hash_tables;

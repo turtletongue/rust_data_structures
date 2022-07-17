@@ -1,28 +1,18 @@
 use std::error::Error;
 
-use rust_data_structures::queues::{Queue, PriorityQueue};
+use rust_data_structures::hash_tables::HashTable;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut queue = PriorityQueue::new();
+  let mut hash_table = HashTable::new(5);
 
-  queue.enqueue(5)?;
-  queue.enqueue(1)?;
+  hash_table.put(6, String::from("Vec"));
+  hash_table.put(6, String::from("Earth"));
+  hash_table.put(1, String::from("Hi"));
+  hash_table.put(3, String::from("Hello"));
 
-  println!("{queue}");
+  println!("{}", hash_table.get(6).unwrap());
 
-  queue.dequeue()?;
-  queue.dequeue()?;
-
-  queue.enqueue(7)?;
-  queue.enqueue(5)?;
-  queue.enqueue(8)?;
-  queue.enqueue(1)?;
-  queue.enqueue(1)?;
-  queue.enqueue(6)?;
-
-  println!("{queue}");
-
-  println!("{}", queue.peek()?);
+  hash_table.remove(8);
 
   Ok(())
 }

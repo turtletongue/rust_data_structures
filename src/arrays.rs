@@ -28,35 +28,25 @@ impl DynamicArray {
   }
 
   pub fn insert(&mut self, item: ArrayItem) {
-    let initial_length = self.length;
-    self.length += 1;
-
-    if initial_length < self.capacity {
+    if self.length < self.capacity {
       unsafe {
-        self.insert_unsafe(initial_length, item);
+        self.insert_unsafe(self.length, item);
       }
+
+      self.length += 1;
 
       return;
     }
 
-    let initial_items = self.items;
-    let initial_layout = self.layout;
-
-    self.capacity = if initial_length == 0 { 1 } else { initial_length * 2 };
+    self.capacity = if self.length == 0 { 1 } else { self.length * 2 };
 
     unsafe {
-      (self.items, self.layout) = Self::allocate_unsafe(self.capacity);
+      self.copy_with_allocation_unsafe(self.capacity);
+
+      self.insert_unsafe(self.length, item);
     }
 
-    unsafe {
-      for index in 0..initial_length {
-        self.insert_unsafe(index, *initial_items.add(index));
-      }
-
-      self.insert_unsafe(initial_length, item);
-
-      dealloc(initial_items, initial_layout);
-    }
+    self.length += 1;
   }
 
   pub fn index_of(&self, item: ArrayItem) -> isize {
@@ -78,40 +68,23 @@ impl DynamicArray {
       self.remove_at_unsafe(index);
     }
 
-    self.length -= 1;
-
     for i in index..self.length {
       unsafe {
         self.insert_unsafe(i, *self.items.add(i + 1));
       }
     }
 
-    let should_shrink = self.length != 0 && self.capacity / self.length >= 2;
+    let should_shrink = self.length != 1 && self.capacity / (self.length - 1) >= ARRAY_QUARTER;
 
     if should_shrink {
-      let initial_items = self.items;
-      let initial_layout = self.layout;
-
-      self.capacity = self.capacity - (self.capacity / ARRAY_QUARTER);
+      self.capacity = self.capacity - (self.capacity / 2);
 
       unsafe {
-        (self.items, self.layout) = Self::allocate_unsafe(self.capacity);
-      }
-
-      let mut allocated_index = 0;
-
-      for i in 0..self.length {
-        unsafe {
-          self.insert_unsafe(allocated_index, *initial_items.add(i));
-        }
-  
-        allocated_index += 1;
-      }
-
-      unsafe {
-        dealloc(initial_items, initial_layout)
+        self.copy_with_allocation_unsafe(self.capacity);
       }
     }
+
+    self.length -= 1;
   }
 
   unsafe fn insert_unsafe(&mut self, index: usize, item: ArrayItem) {
@@ -120,6 +93,19 @@ impl DynamicArray {
 
   unsafe fn remove_at_unsafe(&mut self, index: usize) {
     *self.items.add(index) = ArrayItem::default();
+  }
+
+  unsafe fn copy_with_allocation_unsafe(&mut self, size: usize) {
+    let initial_items = self.items;
+    let initial_layout = self.layout;
+
+    (self.items, self.layout) = Self::allocate_unsafe(size);
+
+    for index in 0..self.length {
+      self.insert_unsafe(index, *initial_items.add(index));
+    }
+
+    dealloc(initial_items, initial_layout);
   }
 
   unsafe fn allocate_unsafe(size: usize) -> (*mut ArrayItem, Layout) {

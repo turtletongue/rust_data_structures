@@ -2,7 +2,6 @@ use std::{cell::RefCell, rc::Rc, cmp::{Ord, Ordering}};
 
 type OptionalNode<T> = Option<Rc<RefCell<Node<T>>>>;
 
-#[derive(Debug)]
 struct Node<T> {
   value: T,
   left_child: OptionalNode<T>,
@@ -19,7 +18,6 @@ impl<T> Node<T> {
   }
 }
 
-#[derive(Debug)]
 pub struct BinarySearchTree<T> {
   root: OptionalNode<T>,
 }

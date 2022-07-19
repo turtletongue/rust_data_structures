@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use rust_data_structures::trees::BinarySearchTree;
+use rust_data_structures::trees::{TraversingOrder, BinarySearchTree};
 
 fn main() -> Result<(), Box<dyn Error>> {
   let mut tree = BinarySearchTree::new();
@@ -15,11 +15,8 @@ fn main() -> Result<(), Box<dyn Error>> {
   tree.insert(8);
   tree.insert(10);
   tree.insert(15);
-  tree.insert(7);
-  tree.insert(7);
 
-  println!("{}", tree.find(7));
-  println!("{}", tree.find(15));
+  tree.traverse(TraversingOrder::InOrder);
 
   Ok(())
 }

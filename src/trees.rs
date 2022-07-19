@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc, cmp::{Ord, Ordering}};
+use std::{cell::RefCell, rc::Rc, cmp::{Ord, Ordering}, fmt::Display};
 
 type OptionalNode<T> = Option<Rc<RefCell<Node<T>>>>;
 
@@ -18,11 +18,17 @@ impl<T> Node<T> {
   }
 }
 
+pub enum TraversingOrder {
+  PreOrder,
+  InOrder,
+  PostOrder,
+}
+
 pub struct BinarySearchTree<T> {
   root: OptionalNode<T>,
 }
 
-impl<T: Ord> BinarySearchTree<T> {
+impl<T: Ord + Display> BinarySearchTree<T> {
   pub fn new() -> Self {
     Self {
       root: None,
@@ -32,8 +38,8 @@ impl<T: Ord> BinarySearchTree<T> {
   pub fn insert(&mut self, value: T) {
     let parent = self.find_free_parent(&value);
 
-    if let None = parent {
-      if let None = self.root {
+    if parent.is_none() {
+      if self.root.is_none() {
         self.root = Self::create_optional_node(value);
       }
 
@@ -56,8 +62,60 @@ impl<T: Ord> BinarySearchTree<T> {
     self.root.is_some() && self.find_free_parent(&value).is_none()
   }
 
+  pub fn traverse(&self, order: TraversingOrder) {
+    let root = self.root.as_ref();
+
+    match order {
+      TraversingOrder::PreOrder => Self::traverse_pre_order(root),
+      TraversingOrder::InOrder => Self::traverse_in_order(root),
+      TraversingOrder::PostOrder => Self::traverse_post_order(root),
+    }
+  }
+
+  fn traverse_pre_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+    if root.is_none() {
+      return;
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+
+    println!("{}", borrowed_root.value);
+
+    Self::traverse_pre_order(borrowed_root.left_child.as_ref());
+
+    Self::traverse_pre_order(borrowed_root.right_child.as_ref());
+  }
+
+  fn traverse_in_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+    if root.is_none() {
+      return;
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+
+    Self::traverse_in_order(borrowed_root.left_child.as_ref());
+
+    println!("{}", borrowed_root.value);
+
+    Self::traverse_in_order(borrowed_root.right_child.as_ref());
+  }
+
+  fn traverse_post_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+    if root.is_none() {
+      return;
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+
+    Self::traverse_post_order(borrowed_root.left_child.as_ref());
+
+    Self::traverse_post_order(borrowed_root.right_child.as_ref());
+
+    println!("{}", borrowed_root.value);
+  }
+
   fn find_free_parent(&self, value: &T) -> OptionalNode<T> {
-    if let None = self.root {
+    if self.root.is_none() {
       return None;
     }
 
@@ -73,7 +131,7 @@ impl<T: Ord> BinarySearchTree<T> {
           Ordering::Equal => return None,
         };
 
-        if let None = next {
+        if next.is_none() {
           break;
         }
 

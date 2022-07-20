@@ -29,7 +29,7 @@ pub struct BinarySearchTree<T> {
   root: OptionalNode<T>,
 }
 
-impl<T: Ord + Display + Eq> BinarySearchTree<T> {
+impl<T: Ord + Display + Eq + Clone> BinarySearchTree<T> {
   pub fn new() -> Self {
     Self {
       root: None,
@@ -83,6 +83,14 @@ impl<T: Ord + Display + Eq> BinarySearchTree<T> {
 
   pub fn validate(&self) -> bool {
     Self::is_valid(self.root.as_ref(), None, None)
+  }
+
+  pub fn get_values_at_distance(&self, distance: usize) -> Vec<T> {
+    let mut result = Vec::new();
+
+    Self::collect_values_at_distance(self.root.as_ref(), distance, &mut result);
+
+    result
   }
 
   fn traverse_pre_order(root: OptionalNodeRef<T>) {
@@ -181,6 +189,21 @@ impl<T: Ord + Display + Eq> BinarySearchTree<T> {
     is_greater_then_min && is_less_then_max &&
       Self::is_valid(left, min, Some(root_value)) &&
       Self::is_valid(right, Some(root_value), max)
+  }
+
+  fn collect_values_at_distance(root: OptionalNodeRef<T>, distance: usize, list: &mut Vec<T>) {
+    if root.is_none() {
+      return;
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+
+    if distance == 0 {
+      return list.push(borrowed_root.value.clone());
+    }
+
+    Self::collect_values_at_distance(borrowed_root.left_child.as_ref(), distance - 1, list);
+    Self::collect_values_at_distance(borrowed_root.right_child.as_ref(), distance - 1, list);
   }
 
   fn find_free_parent(&self, value: &T) -> OptionalNode<T> {

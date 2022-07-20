@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   tree.insert(10);
   tree.insert(15);
 
-  println!("{}", tree.validate());
+  println!("{:?}", tree.get_values_at_distance(2));
 
   Ok(())
 }

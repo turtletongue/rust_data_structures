@@ -1,6 +1,7 @@
 use std::{cell::RefCell, rc::Rc, cmp::{Ord, Ordering}, fmt::Display};
 
 type OptionalNode<T> = Option<Rc<RefCell<Node<T>>>>;
+type OptionalNodeRef<'a, T> = Option<&'a Rc<RefCell<Node<T>>>>;
 
 struct Node<T> {
   value: T,
@@ -28,7 +29,7 @@ pub struct BinarySearchTree<T> {
   root: OptionalNode<T>,
 }
 
-impl<T: Ord + Display> BinarySearchTree<T> {
+impl<T: Ord + Display + Eq> BinarySearchTree<T> {
   pub fn new() -> Self {
     Self {
       root: None,
@@ -76,7 +77,11 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     Self::height(self.root.as_ref())
   }
 
-  fn traverse_pre_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+  pub fn equals(&self, other: &Self) -> bool {
+    Self::is_equal(self.root.as_ref(), other.root.as_ref())
+  }
+
+  fn traverse_pre_order(root: OptionalNodeRef<T>) {
     if root.is_none() {
       return;
     }
@@ -90,7 +95,7 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     Self::traverse_pre_order(borrowed_root.right_child.as_ref());
   }
 
-  fn traverse_in_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+  fn traverse_in_order(root: OptionalNodeRef<T>) {
     if root.is_none() {
       return;
     }
@@ -104,7 +109,7 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     Self::traverse_in_order(borrowed_root.right_child.as_ref());
   }
 
-  fn traverse_post_order(root: Option<&Rc<RefCell<Node<T>>>>) {
+  fn traverse_post_order(root: OptionalNodeRef<T>) {
     if root.is_none() {
       return;
     }
@@ -118,7 +123,7 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     println!("{}", borrowed_root.value);
   }
 
-  fn height(root: Option<&Rc<RefCell<Node<T>>>>) -> i32 {
+  fn height(root: OptionalNodeRef<T>) -> i32 {
     if root.is_none() {
       return -1;
     }
@@ -133,6 +138,25 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     let right_subtree_height = Self::height(borrowed_root.right_child.as_ref());
 
     1 + left_subtree_height.max(right_subtree_height)
+  }
+
+  fn is_equal(root: OptionalNodeRef<T>, other: OptionalNodeRef<T>) -> bool {
+    if root.is_none() || other.is_none() {
+      return root.is_none() && other.is_none();
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+    let borrowed_other = other.unwrap().borrow();
+
+    let root_left = borrowed_root.left_child.as_ref();
+    let other_left = borrowed_other.left_child.as_ref();
+
+    let root_right = borrowed_root.right_child.as_ref();
+    let other_right = borrowed_other.right_child.as_ref();
+
+    borrowed_root.value == borrowed_other.value &&
+      Self::is_equal(root_left, other_left) &&
+      Self::is_equal(root_right, other_right)
   }
 
   fn find_free_parent(&self, value: &T) -> OptionalNode<T> {

@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   tree.insert(10);
   tree.insert(15);
 
-  println!("{:?}", tree.get_values_at_distance(2));
+  tree.traverse_level_order();
 
   Ok(())
 }

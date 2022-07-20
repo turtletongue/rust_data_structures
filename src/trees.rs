@@ -93,6 +93,20 @@ impl<T: Ord + Display + Eq + Clone> BinarySearchTree<T> {
     result
   }
 
+  pub fn traverse_level_order(&self) {
+    let height = self.get_height();
+
+    if height < 0 {
+      return;
+    }
+
+    for level in 0..=height {
+      for value in self.get_values_at_distance(level.try_into().unwrap()) {
+        println!("{value}");
+      }
+    }
+  }
+
   fn traverse_pre_order(root: OptionalNodeRef<T>) {
     if root.is_none() {
       return;

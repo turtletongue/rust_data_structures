@@ -72,6 +72,10 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     }
   }
 
+  pub fn get_height(&self) -> i32 {
+    Self::height(self.root.as_ref())
+  }
+
   fn traverse_pre_order(root: Option<&Rc<RefCell<Node<T>>>>) {
     if root.is_none() {
       return;
@@ -112,6 +116,23 @@ impl<T: Ord + Display> BinarySearchTree<T> {
     Self::traverse_post_order(borrowed_root.right_child.as_ref());
 
     println!("{}", borrowed_root.value);
+  }
+
+  fn height(root: Option<&Rc<RefCell<Node<T>>>>) -> i32 {
+    if root.is_none() {
+      return -1;
+    }
+
+    let borrowed_root  = root.unwrap().borrow();
+
+    if borrowed_root.left_child.is_none() && borrowed_root.right_child.is_none() {
+      return 0;
+    }
+
+    let left_subtree_height = Self::height(borrowed_root.left_child.as_ref());
+    let right_subtree_height = Self::height(borrowed_root.right_child.as_ref());
+
+    1 + left_subtree_height.max(right_subtree_height)
   }
 
   fn find_free_parent(&self, value: &T) -> OptionalNode<T> {

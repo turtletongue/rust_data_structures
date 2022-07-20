@@ -81,6 +81,10 @@ impl<T: Ord + Display + Eq> BinarySearchTree<T> {
     Self::is_equal(self.root.as_ref(), other.root.as_ref())
   }
 
+  pub fn validate(&self) -> bool {
+    Self::is_valid(self.root.as_ref(), None, None)
+  }
+
   fn traverse_pre_order(root: OptionalNodeRef<T>) {
     if root.is_none() {
       return;
@@ -157,6 +161,26 @@ impl<T: Ord + Display + Eq> BinarySearchTree<T> {
     borrowed_root.value == borrowed_other.value &&
       Self::is_equal(root_left, other_left) &&
       Self::is_equal(root_right, other_right)
+  }
+
+  fn is_valid(root: OptionalNodeRef<T>, min: Option<&T>, max: Option<&T>) -> bool {
+    if root.is_none() {
+      return true;
+    }
+
+    let borrowed_root = root.unwrap().borrow();
+
+    let root_value = &borrowed_root.value;
+
+    let is_greater_then_min = min.is_none() || min.unwrap().cmp(root_value) == Ordering::Less;
+    let is_less_then_max = max.is_none() || max.unwrap().cmp(root_value) == Ordering::Greater;
+
+    let left = borrowed_root.left_child.as_ref();
+    let right = borrowed_root.right_child.as_ref();
+
+    is_greater_then_min && is_less_then_max &&
+      Self::is_valid(left, min, Some(root_value)) &&
+      Self::is_valid(right, Some(root_value), max)
   }
 
   fn find_free_parent(&self, value: &T) -> OptionalNode<T> {

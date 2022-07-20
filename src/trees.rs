@@ -23,6 +23,7 @@ pub enum TraversingOrder {
   PreOrder,
   InOrder,
   PostOrder,
+  LevelOrder,
 }
 
 pub struct BinarySearchTree<T> {
@@ -70,6 +71,7 @@ impl<T: Ord + Display + Eq + Clone> BinarySearchTree<T> {
       TraversingOrder::PreOrder => Self::traverse_pre_order(root),
       TraversingOrder::InOrder => Self::traverse_in_order(root),
       TraversingOrder::PostOrder => Self::traverse_post_order(root),
+      TraversingOrder::LevelOrder => self.traverse_level_order(),
     }
   }
 
@@ -93,7 +95,7 @@ impl<T: Ord + Display + Eq + Clone> BinarySearchTree<T> {
     result
   }
 
-  pub fn traverse_level_order(&self) {
+  fn traverse_level_order(&self) {
     let height = self.get_height();
 
     if height < 0 {

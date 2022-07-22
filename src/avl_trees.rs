@@ -28,10 +28,6 @@ impl<T> AVLNode<T> {
   }
 
   pub fn rotation(&self) -> Option<Rotation> {
-    if !self.is_left_heavy() && !self.is_right_heavy() {
-      return None;
-    }
-    
     if self.is_left_heavy() {
       let balance_factor = self.left_child.as_ref().unwrap().borrow().balance_factor();
       

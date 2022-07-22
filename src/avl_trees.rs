@@ -1,4 +1,4 @@
-use std::{cell::{RefCell}, rc::Rc, cmp::Ordering};
+use std::{cell::RefCell, rc::Rc, cmp::Ordering};
 
 type OptionalAVLNode<T> = Option<Rc<RefCell<AVLNode<T>>>>;
 type OptionalAVLNodeRef<'a, T> = Option<&'a Rc<RefCell<AVLNode<T>>>>;

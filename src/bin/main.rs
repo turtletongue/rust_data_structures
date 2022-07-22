@@ -14,7 +14,5 @@ fn main() -> Result<(), Box<dyn Error>> {
   heap.remove()?;
   heap.remove()?;
 
-  println!("{:#?}", heap);
-
   Ok(())
 }

@@ -1,20 +1,19 @@
 use std::error::Error;
 
-use rust_data_structures::trees::{TraversingOrder, BinarySearchTree};
+use rust_data_structures::avl_trees::AVLTree;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut tree = BinarySearchTree::new();
+  let mut tree = AVLTree::new();
 
-  tree.insert(7);
-  tree.insert(4);
-  tree.insert(9);
-  tree.insert(1);
-  tree.insert(6);
-  tree.insert(8);
+  tree.insert(30);
   tree.insert(10);
-  tree.insert(15);
-
-  tree.traverse(TraversingOrder::LevelOrder);
+  tree.insert(20);
+  tree.insert(5);
+  tree.insert(4);
+  tree.insert(3);
+  tree.insert(2);
+  tree.insert(1);
+  tree.insert(50);
 
   Ok(())
 }

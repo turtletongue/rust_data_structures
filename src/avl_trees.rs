@@ -117,7 +117,7 @@ impl<T: Ord> AVLTree<T> {
       }
 
       borrowed_root.update_height();
-    }
+    };
 
     Some(Self::balance(root))
   }
@@ -149,7 +149,7 @@ impl<T: Ord> AVLTree<T> {
       let mut borrowed_root = root.borrow_mut();
 
       borrowed_root.right_child = Some(Self::rotate_right(borrowed_root.right_child.as_ref().unwrap()));
-    }
+    };
 
     Self::rotate_left(root)
   }

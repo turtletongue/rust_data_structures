@@ -11,3 +11,5 @@ pub mod hash_tables;
 pub mod trees;
 
 pub mod avl_trees;
+
+pub mod heaps;

@@ -1,19 +1,20 @@
 use std::error::Error;
 
-use rust_data_structures::avl_trees::AVLTree;
+use rust_data_structures::heaps::Heap;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut tree = AVLTree::new();
+  let mut heap = Heap::new();
 
-  tree.insert(30);
-  tree.insert(10);
-  tree.insert(20);
-  tree.insert(5);
-  tree.insert(4);
-  tree.insert(3);
-  tree.insert(2);
-  tree.insert(1);
-  tree.insert(50);
+  heap.insert(1);
+  heap.insert(2);
+  heap.insert(3);
+  heap.insert(4);
+  heap.insert(5);
+
+  heap.remove()?;
+  heap.remove()?;
+
+  println!("{:#?}", heap);
 
   Ok(())
 }

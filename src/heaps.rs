@@ -4,7 +4,6 @@ enum HeapChild {
   Right,
 }
 
-#[derive(Debug)]
 pub struct Heap<T> {
   items: Vec<T>,
 }

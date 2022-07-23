@@ -1,18 +1,18 @@
 use std::error::Error;
 
-use rust_data_structures::heaps::Heap;
+use rust_data_structures::queues::HeapPriorityQueue;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut heap = Heap::new();
+  let mut queue = HeapPriorityQueue::new();
 
-  heap.insert(1);
-  heap.insert(2);
-  heap.insert(3);
-  heap.insert(4);
-  heap.insert(5);
+  queue.enqueue(4);
+  queue.enqueue(8);
+  queue.enqueue(1);
+  queue.enqueue(1);
 
-  heap.remove()?;
-  heap.remove()?;
+  println!("{}", queue.dequeue()?);
+  println!("{}", queue.dequeue()?);
+  println!("{}", queue.dequeue()?);
 
   Ok(())
 }

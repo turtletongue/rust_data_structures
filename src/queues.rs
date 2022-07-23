@@ -1,5 +1,7 @@
 use std::fmt::{Display, Formatter};
 
+use crate::heaps::Heap;
+
 pub trait Queue<T> {
   fn enqueue(&mut self, value: T) -> Result<(), &'static str>;
   fn dequeue(&mut self) -> Result<T, &'static str>;
@@ -184,5 +186,27 @@ impl Display for PriorityQueue {
     write!(f, "[{}]", formatted_items)?;
 
     Ok(())
+  }
+}
+
+pub struct HeapPriorityQueue {
+  heap: Heap<i32>,
+}
+
+impl HeapPriorityQueue {
+  pub fn new() -> Self {
+    Self { heap: Heap::new() }
+  }
+
+  pub fn enqueue(&mut self, value: i32) {
+    self.heap.insert(value);
+  }
+
+  pub fn dequeue(&mut self) -> Result<i32, &'static str> {
+    self.heap.remove()
+  }
+
+  pub fn is_empty(&self) -> bool {
+    self.heap.is_empty()
   }
 }

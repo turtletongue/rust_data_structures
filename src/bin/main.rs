@@ -1,18 +1,11 @@
 use std::error::Error;
 
-use rust_data_structures::queues::HeapPriorityQueue;
+use rust_data_structures::heaps::Heap;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut queue = HeapPriorityQueue::new();
+  let heap = Heap::heapify(vec![1, 6, 2, 5, 3, 4]);
 
-  queue.enqueue(4);
-  queue.enqueue(8);
-  queue.enqueue(1);
-  queue.enqueue(1);
-
-  println!("{}", queue.dequeue()?);
-  println!("{}", queue.dequeue()?);
-  println!("{}", queue.dequeue()?);
+  println!("{:#?}", heap);
 
   Ok(())
 }

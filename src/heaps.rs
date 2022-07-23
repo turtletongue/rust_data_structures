@@ -4,6 +4,7 @@ enum HeapChild {
   Right,
 }
 
+#[derive(Debug)]
 pub struct Heap<T> {
   items: Vec<T>,
 }
@@ -11,6 +12,18 @@ pub struct Heap<T> {
 impl Heap<i32> {
   pub fn new() -> Self {
     Self { items: Vec::new() }
+  }
+
+  pub fn heapify(items: Vec<i32>) -> Self {
+    let length = items.len();
+
+    let mut heap = Self { items };
+
+    for index in 1..length {
+      heap.bubble(index);
+    }
+
+    heap
   }
 
   pub fn insert(&mut self, value: i32) {
@@ -81,32 +94,21 @@ impl Heap<i32> {
     let (right_child, right_child_index) = self.right_child(index);
     let value = self.items[index];
 
-    match (left_child, right_child) {
-      (Some(left_child), Some(right_child)) => {
-        let max = *left_child.max(right_child);
+    let mut swap_index = index;
 
-        if max <= value {
-          return None;
-        }
-
-        Some(if *left_child == max { left_child_index } else { right_child_index })
-      },
-      (Some(left_child), None) => {
-        if *left_child <= value {
-          return None;
-        }
-
-        Some(left_child_index)
-      },
-      (None, Some(right_child)) => {
-        if *right_child <= value {
-          return None;
-        }
-
-        Some(right_child_index)
-      },
-      (None, None) => return None,
+    if left_child.is_some() && *left_child.unwrap() > value {
+      swap_index = left_child_index;
     }
+
+    if right_child.is_some() && *right_child.unwrap() > value {
+      swap_index = right_child_index;
+    }
+
+    if swap_index == index {
+      return None;
+    }
+
+    Some(swap_index)
   }
 
   fn left_child(&self, index: usize) -> (Option<&i32>, usize) {

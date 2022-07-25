@@ -1,16 +1,21 @@
 use std::error::Error;
 
-use rust_data_structures::tries::Trie;
+use rust_data_structures::graphs::Graph;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut trie = Trie::new();
+  let mut graph = Graph::new();
 
-  trie.insert("car");
-  trie.insert("card");
-  trie.insert("careful");
-  trie.insert("egg");
+  graph.add_node("Anny");
+  graph.add_node("Bob");
+  graph.add_node("Tom");
 
-  println!("{:#?}", trie.complete("car"));
+  graph.add_edge(&"Anny", "Bob")?;
+  graph.add_edge(&"Bob", "Anny")?;
+  graph.add_edge(&"Bob", "Tom")?;
+
+  graph.remove_edge(&"Anny", &"Bob");
+
+  println!("{graph}");
 
   Ok(())
 }

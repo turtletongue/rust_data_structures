@@ -15,3 +15,5 @@ pub mod avl_trees;
 pub mod heaps;
 
 pub mod tries;
+
+pub mod graphs;

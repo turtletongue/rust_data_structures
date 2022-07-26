@@ -1,19 +1,19 @@
 use std::{collections::{HashMap, HashSet}, hash::Hash, fmt::Display};
 
-struct Node<T> {
-  value: T,
-  relatives: HashSet<T>,
+struct Node<'a, T> {
+  value: &'a T,
+  relatives: HashSet<&'a T>,
 }
 
-impl<T: Eq + Hash> Node<T> {
-  pub fn new(value: T) -> Self {
+impl<'a, T: Eq + Hash> Node<'a, T> {
+  pub fn new(value: &'a T) -> Self {
     Self {
       value,
       relatives: HashSet::new(),
     }
   }
 
-  pub fn add_relative(&mut self, value: T) {
+  pub fn add_relative(&mut self, value: &'a T) {
     self.relatives.insert(value);
   }
 
@@ -22,7 +22,7 @@ impl<T: Eq + Hash> Node<T> {
       return;
     }
 
-    self.relatives.retain(|relative| *relative != *value);
+    self.relatives.retain(|relative| *relative != value);
   }
 
   pub fn has_relative(&self, value: &T) -> bool {
@@ -30,7 +30,7 @@ impl<T: Eq + Hash> Node<T> {
   }
 }
 
-impl<T: Eq + Hash + Display> Display for Node<T> {
+impl<'a, T: Eq + Hash + Display> Display for Node<'a, T> {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     if self.relatives.len() == 0 {
       return Ok(());
@@ -52,41 +52,41 @@ impl<T: Eq + Hash + Display> Display for Node<T> {
   }
 }
 
-pub struct Graph<T> {
-  nodes: HashMap<T, Box<Node<T>>>,
+pub struct Graph<'a, T> {
+  nodes: HashMap<&'a T, Box<Node<'a, T>>>,
 }
 
-impl<T: Eq + Hash + Clone> Graph<T> {
+impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
   pub fn new() -> Self {
     Self {
       nodes: HashMap::new(),
     }
   }
 
-  pub fn add_node(&mut self, value: T) {
-    self.nodes.entry(value.clone()).or_insert(Box::new(Node::new(value)));
+  pub fn add_node(&mut self, value: &'a T) {
+    self.nodes.entry(value).or_insert(Box::new(Node::new(value)));
   }
 
-  pub fn remove_node(&mut self, value: T) -> Result<(), &'static str> {
-    if !self.is_node_exists(&value) {
+  pub fn remove_node(&mut self, value: &'a T) -> Result<(), &'static str> {
+    if !self.is_node_exists(value) {
       return Err("Node is not exist");
     }
 
     for node in self.nodes.values_mut() {
-      node.remove_relative(&value);
+      node.remove_relative(value);
     }
 
-    self.nodes.remove(&value);
+    self.nodes.remove(value);
 
     Ok(())
   }
 
-  pub fn add_edge(&mut self, from: &T, to: T) -> Result<(), &'static str> {
+  pub fn add_edge(&mut self, from: &T, to: &'a T) -> Result<(), &'static str> {
     if !self.is_node_exists(from) {
       return Err("From node is not exist");
     }
 
-    if !self.is_node_exists(&to) {
+    if !self.is_node_exists(to) {
       return Err("To node is not exist");
     }
 
@@ -112,7 +112,7 @@ impl<T: Eq + Hash + Clone> Graph<T> {
   }
 }
 
-impl<T: Eq + Hash + Display> Display for Graph<T> {
+impl<'a, T: Eq + Hash + Display> Display for Graph<'a, T> {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let mut formatted_graph = String::new();
 

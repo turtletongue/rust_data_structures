@@ -5,15 +5,19 @@ use rust_data_structures::graphs::Graph;
 fn main() -> Result<(), Box<dyn Error>> {
   let mut graph = Graph::new();
 
-  graph.add_node("Anny");
-  graph.add_node("Bob");
-  graph.add_node("Tom");
+  let anny = "Anny";
+  let bob = "Bob";
+  let tom = "Tom";
 
-  graph.add_edge(&"Anny", "Bob")?;
-  graph.add_edge(&"Bob", "Anny")?;
-  graph.add_edge(&"Bob", "Tom")?;
+  graph.add_node(&anny);
+  graph.add_node(&bob);
+  graph.add_node(&tom);
 
-  graph.remove_edge(&"Anny", &"Bob");
+  graph.add_edge(&anny, &bob)?;
+  graph.add_edge(&bob, &anny)?;
+  graph.add_edge(&bob, &tom)?;
+
+  graph.remove_edge(&anny, &bob);
 
   println!("{graph}");
 

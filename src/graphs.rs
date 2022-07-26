@@ -107,6 +107,37 @@ impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
     node.remove_relative(to);
   }
 
+  pub fn topological_sort(&self) -> Vec<&T> {
+    let mut sorted = Vec::with_capacity(self.nodes.len());
+    let mut visited_nodes = HashSet::new();
+
+    for current in self.nodes.keys() {
+      self.traverse_for_sort(current, &mut sorted, &mut visited_nodes);
+    }
+
+    sorted.iter().map(|current| *current).collect()
+  }
+
+  fn traverse_for_sort(&self, current: &'a T, sorted: &mut Vec<&'a T>, visited_nodes: &mut HashSet<&'a T>) {
+    if visited_nodes.contains(current) {
+      return;
+    }
+
+    let node = self.nodes.get(current);
+
+    if node.is_none() {
+      return;
+    }
+
+    visited_nodes.insert(current);
+
+    for relative in &node.unwrap().relatives {
+      self.traverse_for_sort(relative, sorted, visited_nodes);
+    }
+
+    sorted.push(current);
+  }
+
   fn is_node_exists(&self, value: &T) -> bool {
     self.nodes.get(value).is_some()
   }

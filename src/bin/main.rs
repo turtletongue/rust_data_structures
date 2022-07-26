@@ -5,21 +5,24 @@ use rust_data_structures::graphs::Graph;
 fn main() -> Result<(), Box<dyn Error>> {
   let mut graph = Graph::new();
 
-  let anny = "Anny";
-  let bob = "Bob";
-  let tom = "Tom";
+  let core = "Core";
+  let console = "Console";
+  let calculator = "Calculator";
+  let utils = "Utils";
 
-  graph.add_node(&anny);
-  graph.add_node(&bob);
-  graph.add_node(&tom);
+  graph.add_node(&core);
+  graph.add_node(&console);
+  graph.add_node(&calculator);
+  graph.add_node(&utils);
 
-  graph.add_edge(&anny, &bob)?;
-  graph.add_edge(&bob, &anny)?;
-  graph.add_edge(&bob, &tom)?;
+  graph.add_edge(&utils, &core)?;
+  graph.add_edge(&console, &core)?;
+  graph.add_edge(&calculator, &console)?;
+  graph.add_edge(&calculator, &utils)?;
 
-  graph.remove_edge(&anny, &bob);
+  let sorted = graph.topological_sort();
 
-  println!("{graph}");
+  println!("{:#?}", sorted);
 
   Ok(())
 }

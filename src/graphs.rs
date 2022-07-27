@@ -64,7 +64,7 @@ impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
   }
 
   pub fn add_node(&mut self, value: &'a T) {
-    self.nodes.entry(value).or_insert(Node::new(value));
+    self.nodes.insert(value, Node::new(value));
   }
 
   pub fn remove_node(&mut self, value: &'a T) -> Result<(), &'static str> {

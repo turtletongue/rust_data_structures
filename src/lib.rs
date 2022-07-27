@@ -17,3 +17,5 @@ pub mod heaps;
 pub mod tries;
 
 pub mod graphs;
+
+pub mod weighted_graphs;

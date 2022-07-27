@@ -1,26 +1,23 @@
 use std::error::Error;
 
-use rust_data_structures::graphs::Graph;
+use rust_data_structures::weighted_graphs::WeightedGraph;
 
 fn main() -> Result<(), Box<dyn Error>> {
-  let mut graph = Graph::new();
+  let mut graph = WeightedGraph::new();
 
-  let a = "A";
-  let b = "B";
-  let c = "C";
-  let d = "D";
+  let alice = "Alice";
+  let bob = "Bob";
+  let john = "John";
 
-  graph.add_node(&a);
-  graph.add_node(&b);
-  graph.add_node(&c);
-  graph.add_node(&d);
+  graph.add_node(&alice);
+  graph.add_node(&bob);
+  graph.add_node(&john);
 
-  graph.add_edge(&a, &b)?;
-  graph.add_edge(&b, &c)?;
-  graph.add_edge(&c, &a)?;
-  graph.add_edge(&d, &a)?;
+  graph.add_edge(&alice, &john, 1)?;
+  graph.add_edge(&bob, &john, 5)?;
+  graph.add_edge(&john, &bob, 7)?;
 
-  println!("{:#?}", graph.has_cycle());
+  println!("{:#?}", graph);
 
   Ok(())
 }

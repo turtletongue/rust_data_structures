@@ -53,7 +53,7 @@ impl<'a, T: Eq + Hash + Display> Display for Node<'a, T> {
 }
 
 pub struct Graph<'a, T> {
-  nodes: HashMap<&'a T, Box<Node<'a, T>>>,
+  nodes: HashMap<&'a T, Node<'a, T>>,
 }
 
 impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
@@ -64,7 +64,7 @@ impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
   }
 
   pub fn add_node(&mut self, value: &'a T) {
-    self.nodes.entry(value).or_insert(Box::new(Node::new(value)));
+    self.nodes.entry(value).or_insert(Node::new(value));
   }
 
   pub fn remove_node(&mut self, value: &'a T) -> Result<(), &'static str> {

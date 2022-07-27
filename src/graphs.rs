@@ -118,6 +118,48 @@ impl<'a, T: Eq + Hash + Clone> Graph<'a, T> {
     sorted.iter().map(|current| *current).collect()
   }
 
+  pub fn has_cycle(&self) -> bool {
+    let mut visiting = HashSet::new();
+    let mut visited = HashSet::new();
+
+    for current in self.nodes.keys() {
+      if self.is_cycle_detected(current, &mut visiting, &mut visited) {
+        return true;
+      }
+    }
+
+    false
+  }
+
+  fn is_cycle_detected(&self, current: &'a T, visiting: &mut HashSet<&'a T>, visited: &mut HashSet<&'a T>) -> bool {
+    if visited.contains(current) {
+      return false;
+    }
+
+    if visiting.contains(current) {
+      return true;
+    }
+
+    let node = self.nodes.get(current);
+
+    if node.is_none() {
+      return false;
+    }
+
+    visiting.insert(current);
+
+    for relative in &node.unwrap().relatives {
+      if self.is_cycle_detected(relative, visiting, visited) {
+        return true;
+      }
+    }
+
+    visiting.remove(current);
+    visited.insert(current);
+
+    false
+  }
+
   fn traverse_for_sort(&self, current: &'a T, sorted: &mut Vec<&'a T>, visited_nodes: &mut HashSet<&'a T>) {
     if visited_nodes.contains(current) {
       return;

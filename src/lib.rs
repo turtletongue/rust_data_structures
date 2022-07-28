@@ -19,3 +19,5 @@ pub mod tries;
 pub mod graphs;
 
 pub mod weighted_graphs;
+
+pub mod sorting;

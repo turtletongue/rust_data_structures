@@ -1,18 +1,33 @@
 use std::{collections::{HashMap, BinaryHeap, HashSet}, hash::Hash, fmt::Display, cmp::{Ordering, Reverse}};
 
-struct Edge {
+#[derive(Eq, PartialEq)]
+struct Edge<'a, T> {
+  from: &'a T,
+  to: &'a T,
   weight: usize,
 }
 
-impl Edge {
-  pub fn new(weight: usize) -> Self {
-    Self { weight }
+impl<'a, T> Edge<'a, T> {
+  pub fn new(from: &'a T, to: &'a T, weight: usize) -> Self {
+    Self { from, to, weight }
+  }
+}
+
+impl<'a, T: PartialOrd> PartialOrd for Edge<'a, T> {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    self.weight.partial_cmp(&other.weight)
+  }
+}
+
+impl<'a, T: Ord> Ord for Edge<'a, T> {
+  fn cmp(&self, other: &Self) -> Ordering {
+    self.weight.cmp(&other.weight)
   }
 }
 
 struct Node<'a, T> {
   value: &'a T,
-  edges: HashMap<&'a T, Edge>,
+  edges: HashMap<&'a T, Edge<'a, T>>,
 }
 
 impl<'a, T: Eq + Hash> Node<'a, T> {
@@ -24,10 +39,9 @@ impl<'a, T: Eq + Hash> Node<'a, T> {
   }
 
   pub fn add_edge(&mut self, to: &'a T, weight: usize) {
-    let edge = self.edges.entry(to).or_insert(Edge::new(weight));
+    let edge = self.edges.entry(to).or_insert(Edge::new(self.value, to, weight));
     edge.weight = weight;
   }
-
 }
 
 impl<'a, T: Display> Display for Node<'a, T> {
@@ -86,6 +100,10 @@ impl<'a, T: Eq + Hash + Ord> WeightedGraph<'a, T> {
   }
 
   pub fn add_node(&mut self, value: &'a T) {
+    if self.nodes.contains_key(value) {
+      return;
+    }
+
     self.nodes.insert(value, Node::new(value));
   }
 
@@ -173,6 +191,44 @@ impl<'a, T: Eq + Hash + Ord> WeightedGraph<'a, T> {
     }
 
     false
+  }
+
+  pub fn minimum_spanning_tree(&self) -> Result<Self, &'static str> {
+    let mut spanning_tree = Self::new();
+   
+    if self.is_empty() {
+      return Ok(spanning_tree);
+    }
+
+    let mut priority_queue = BinaryHeap::new();
+
+    for node in self.nodes.values() {
+      for edge in node.edges.values() {
+        priority_queue.push(Reverse(edge));
+      }
+    }
+
+    let mut visited_nodes = HashSet::new();
+
+    while visited_nodes.len() != self.nodes.len() && priority_queue.len() > 0 {
+      let optimal_edge = priority_queue.pop().unwrap().0;
+
+      if visited_nodes.contains(optimal_edge.from) {
+        continue;
+      }
+
+      spanning_tree.add_node(optimal_edge.from);
+      spanning_tree.add_node(optimal_edge.to);
+      spanning_tree.add_edge(optimal_edge.from, optimal_edge.to, optimal_edge.weight)?;
+
+      visited_nodes.insert(optimal_edge.from);
+    }
+
+    Ok(spanning_tree)
+  }
+
+  pub fn is_empty(&self) -> bool {
+    self.nodes.len() == 0
   }
 
   fn is_cycle_detected(&self, current: &'a T, parent: Option<&'a T>, visited_nodes: &mut HashSet<&'a T>) -> bool {

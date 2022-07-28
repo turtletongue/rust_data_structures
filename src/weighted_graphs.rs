@@ -159,6 +159,42 @@ impl<'a, T: Eq + Hash + Ord> WeightedGraph<'a, T> {
     Ok(self.construct_path(to_node, previous_nodes))
   }
 
+  pub fn has_cycle(&self) -> bool {
+    let mut visited_nodes = HashSet::new();
+
+    for current in self.nodes.keys() {
+      if visited_nodes.contains(current) {
+        continue;
+      }
+
+      if self.is_cycle_detected(current, None, &mut visited_nodes) {
+        return true;
+      }
+    }
+
+    false
+  }
+
+  fn is_cycle_detected(&self, current: &'a T, parent: Option<&'a T>, visited_nodes: &mut HashSet<&'a T>) -> bool {
+    if visited_nodes.contains(current) {
+      return true;
+    }
+
+    visited_nodes.insert(current);
+
+    for (relative, _) in &self.nodes[current].edges {
+      if parent.is_some() && parent.unwrap() == *relative {
+        continue;
+      }
+
+      if self.is_cycle_detected(relative, Some(current), visited_nodes) {
+        return true;
+      }
+    }
+
+    false
+  }
+
   fn construct_path(&self, to_node: Option<&Node<'a, T>>, previous_nodes: HashMap<&&'a T, &'a T>) -> Vec<&'a T> {
     let mut result = Vec::new();
     let mut current = to_node;

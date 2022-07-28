@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   graph.add_edge(&c, &d, 1)?;
   graph.add_edge(&b, &d, 4)?;
 
-  println!("{:#?}", graph.shortest_path(&a, &e));
+  println!("{:#?}", graph.has_cycle());
 
   Ok(())
 }

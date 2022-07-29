@@ -108,3 +108,29 @@ fn make_partitioning<T: PartialOrd + Clone>(array: &mut Vec<T>, start: usize, en
     make_partitioning(array, boundary.unwrap() + 1, end);
   }
 }
+
+pub fn counting_sort(array: &mut Vec<usize>, k: usize) {
+  let mut counts = Vec::with_capacity(k + 1);
+
+  for _ in 0..=k {
+    counts.push(0);
+  }
+
+  for number in array.iter() {
+    if *number > k {
+      return;
+    }
+
+    counts[*number] += 1;
+  }
+
+  let mut insert_index = 0;
+
+  for mapped_number in 0..counts.len() {
+    for _ in 0..counts[mapped_number] {
+      array[insert_index] = mapped_number;
+
+      insert_index += 1;
+    }
+  }
+}

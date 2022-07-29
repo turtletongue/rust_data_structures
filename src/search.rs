@@ -58,3 +58,38 @@ fn binary_search_iterative<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T) -
 }
 
 */
+
+pub fn ternary_search<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T) -> Option<usize> {
+  if array.len() == 0 {
+    return None;
+  }
+
+  ternary_search_recursive(array, item, 0, array.len() - 1)
+} 
+
+fn ternary_search_recursive<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T, left: usize, right: usize) -> Option<usize> {
+  if left > right {
+    return None;
+  }
+
+  let partition_size = (right - left) / 3;
+
+  let first_middle = left + partition_size;
+  let second_middle = right - partition_size;
+
+  if item == array[first_middle] {
+    return Some(first_middle);
+  }
+
+  if item == array[second_middle] {
+    return Some(second_middle);
+  }
+
+  if item < array[first_middle] {
+    ternary_search_recursive(array, item, left, first_middle - 1)
+  } else if item > array[second_middle] {
+    ternary_search_recursive(array, item, second_middle + 1, right)
+  } else {
+    ternary_search_recursive(array, item, first_middle + 1, second_middle - 1)
+  }
+}

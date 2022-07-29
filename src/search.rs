@@ -117,3 +117,20 @@ pub fn jump_search<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T) -> Option
 
   None
 }
+
+pub fn exponential_search<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T) -> Option<usize> {
+  if array.len() == 0 {
+    return None;
+  }
+
+  let mut boundary = 1;
+
+  while boundary < array.len() && item > array[boundary] {
+    boundary *= 2;
+  }
+
+  let left = boundary / 2;
+  let right = boundary.min(array.len() - 1);
+
+  binary_search_recursive(array, item, left, right)
+}

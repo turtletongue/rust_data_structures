@@ -80,3 +80,31 @@ pub fn merge_sort<T: PartialOrd + Clone>(array: &mut Vec<T>) {
     }
   }
 }
+
+pub fn quick_sort<T: PartialOrd + Clone>(array: &mut Vec<T>) {
+  if array.len() == 0 {
+    return;
+  }
+
+  make_partitioning(array, 0, array.len() - 1);
+}
+
+fn make_partitioning<T: PartialOrd + Clone>(array: &mut Vec<T>, start: usize, end: usize) {
+  let mut boundary = if start == 0 { None } else { Some(start - 1) };
+
+  for index in start..=end {
+    if array[index] <= array[end] {
+      boundary = if boundary.is_none() { Some(0) } else { Some(boundary.unwrap() + 1) };
+
+      array.swap(boundary.unwrap(), index);
+    }
+  }
+
+  if boundary.unwrap() > 1 {
+    make_partitioning(array, start, boundary.unwrap() - 1);
+  }
+
+  if boundary.unwrap() + 1 < end {
+    make_partitioning(array, boundary.unwrap() + 1, end);
+  }
+}

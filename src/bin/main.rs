@@ -1,9 +1,9 @@
 use rust_data_structures::sorting;
 
 fn main() {
-  let mut array = vec![5, 7, 3, 1, 2];
+  let mut array = vec![7, 3, 5, 2, 3, 1, 5, 8];
 
-  sorting::insertion_sort(&mut array);
+  sorting::merge_sort(&mut array);
 
   println!("{:#?}", array);
 }

@@ -45,3 +45,38 @@ pub fn insertion_sort<T: PartialOrd + Clone>(array: &mut Vec<T>) {
     array[sorted_index] = current.clone();    
   }
 }
+
+pub fn merge_sort<T: PartialOrd + Clone>(array: &mut Vec<T>) {
+  let length = array.len();
+
+  if length <= 1 {
+    return;
+  }
+
+  let middle = array.len() / 2;
+
+  let (mut first_part, mut first_pointer) = (Vec::from(&array[0..middle]), 0);
+  merge_sort(&mut first_part);
+
+  let (mut second_part, mut second_pointer) = (Vec::from(&array[middle..length]), 0);
+  merge_sort(&mut second_part);
+
+  for index in 0..array.len() {
+    let is_first_valid = first_pointer < first_part.len();
+    let is_second_valid = second_pointer < second_part.len();
+
+    if !is_first_valid && !is_second_valid {
+      break;
+    }
+
+    if !is_second_valid || (is_first_valid && first_part[first_pointer] < second_part[second_pointer]) {
+      array[index] = first_part[first_pointer].clone();
+
+      first_pointer += 1;
+    } else {
+      array[index] = second_part[second_pointer].clone();
+
+      second_pointer += 1;
+    }
+  }
+}

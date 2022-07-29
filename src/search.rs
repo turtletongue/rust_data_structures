@@ -93,3 +93,27 @@ fn ternary_search_recursive<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T, 
     ternary_search_recursive(array, item, first_middle + 1, second_middle - 1)
   }
 }
+
+pub fn jump_search<T: PartialEq + PartialOrd>(array: &Vec<T>, item: T) -> Option<usize> {
+  let block_size = (array.len() as f64).sqrt() as usize;
+
+  let mut start = 0;
+  let mut next = block_size;
+
+  while item > array[next - 1] && start < array.len() {
+    start = next;
+    next += block_size;
+
+    if next > array.len() {
+      next = array.len();
+    }
+  }
+
+  for index in start..next {
+    if item == array[index] {
+      return Some(index);
+    }
+  }
+
+  None
+}

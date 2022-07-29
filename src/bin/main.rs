@@ -1,7 +1,7 @@
 use rust_data_structures::search;
 
 fn main() {
-  let array = vec![1, 2, 3, 4, 5, 6];
+  let array = vec![1, 2, 3, 4, 5, 6, 7];
 
-  println!("{}", search::ternary_search(&array, 3).unwrap());
+  println!("{}", search::jump_search(&array, 2).unwrap());
 }

@@ -134,3 +134,33 @@ pub fn counting_sort(array: &mut Vec<usize>, k: usize) {
     }
   }
 }
+
+pub fn bucket_sort(array: &mut Vec<usize>, buckets_count: usize) {
+  let mut insert_index = 0;
+
+  for bucket in create_buckets(array, buckets_count).iter_mut() {
+    bucket.sort();
+
+    for item in bucket {
+      array[insert_index] = *item;
+
+      insert_index += 1;
+    }
+  }
+}
+
+fn create_buckets(array: &mut Vec<usize>, buckets_count: usize) -> Vec<Vec<usize>> {
+  let mut buckets = Vec::new();
+
+  for _ in 0..buckets_count {
+    buckets.push(Vec::new());
+  }
+
+  for item in array.iter() {
+    let bucket_index = *item / buckets.len();
+
+    buckets[bucket_index].push(item.clone());
+  }
+
+  buckets
+}

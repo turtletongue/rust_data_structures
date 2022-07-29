@@ -1,9 +1,7 @@
-use rust_data_structures::sorting;
+use rust_data_structures::search;
 
 fn main() {
-  let mut array = vec![7, 3, 5, 2, 3, 1, 5, 8];
+  let array = vec![1, 2, 3, 4, 5, 6];
 
-  sorting::bucket_sort(&mut array, 3);
-
-  println!("{:#?}", array);
+  println!("{}", search::binary_search(&array, 4).unwrap());
 }

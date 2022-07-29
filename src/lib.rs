@@ -21,3 +21,5 @@ pub mod graphs;
 pub mod weighted_graphs;
 
 pub mod sorting;
+
+pub mod search;
